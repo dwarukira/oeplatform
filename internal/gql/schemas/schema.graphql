@@ -1,0 +1,126 @@
+scalar Time
+
+directive @hasScope(scopes: [String]) on OBJECT | FIELD_DEFINITION
+directive @hasRole(roles: [String]) on OBJECT | FIELD_DEFINITION
+directive @isAuthenticated on FIELD | FIELD_DEFINITION
+
+
+# Types
+type User {
+  id: ID!
+  email: String!
+  avatarURL: String
+  name: String
+  firstName: String
+  lastName: String
+  nickName: String
+  description: String
+  location: String
+  APIkey: String
+  profiles: [UserProfile]
+  createdAt: Time!
+  updatedAt: Time
+  lastLogin: Time
+  status: UserStatus
+  roles: [Role]
+
+}
+
+enum UserStatus {
+  Active
+  InActive
+  Suspended
+}
+
+type UserProfile {
+  id: ID!
+  email: String!
+  avatarURL: String
+  name: String
+  firstName: String
+  lastName: String
+  nickName: String
+  description: String
+  location: String
+  APIkey: String
+  profiles: [UserProfile]
+  createdAt: Time!
+  updatedAt: Time
+}
+
+type Role {
+  id: ID!
+  name: String!
+  description: String
+  createdAt: Time!
+  updatedAt: Time
+  permissions: [Permission]
+
+}
+
+type Permission {
+  id: ID!
+  description: String
+  createdAt: Time!
+  updatedAt: Time
+  tag: String!
+
+}
+
+# Input Types
+input UserInput {
+  email: String
+  password: String
+  avatarURL: String
+  displayName: String
+  name: String
+  firstName: String
+  lastName: String
+  nickName: String
+  description: String
+  location: String
+}
+
+# List Types
+type Users {
+  count: Int
+  list: [User!]!
+}
+
+
+# List Types
+type Roles {
+  count: Int
+  list: [Role!]!
+}
+
+type Authuser {
+  user: User!
+  token: String
+}
+
+input TokenCreateInput {
+  email: String!
+  password: String!
+}
+
+input RoleInput {
+  name: String!
+  description: String
+}
+
+# Define mutations here
+type Mutation {
+  createUser(input: UserInput!): Authuser!
+  updateUser(id: ID!, input: UserInput!): Authuser!
+  deleteUser(id: ID!): Boolean!
+  tokenCreate(input: TokenCreateInput!): Authuser!
+  createRole(input: RoleInput!): Role!
+}
+
+# Define queries here
+type Query {
+  users(id: ID): Users!
+  sellers(id: ID): Sellers!
+  roles(id: ID): Roles!
+}

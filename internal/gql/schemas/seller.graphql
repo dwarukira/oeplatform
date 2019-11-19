@@ -1,0 +1,52 @@
+
+type Seller {
+  id: ID!
+  name: String!
+  phone: String
+  website: String
+  user: User!
+  bank: Bank!
+  displayName: String
+  createdAt: Time!
+  updatedAt: Time
+
+}
+
+
+type Bank {
+  id: ID!
+  name: String!
+  holderName: String
+  accountNumber: String
+  location: String
+  createdAt: Time!
+  updatedAt: Time
+}
+
+input BankInput {
+  name: String!
+  holderName: String!
+  accountNumber: String!
+  location: String!
+}
+
+input SellerInput {
+  name: String!
+  phone: String!
+  website: String
+  displayName: String!
+  bank: BankInput!
+}
+
+
+# List Types
+type Sellers {
+  count: Int
+  list: [Seller!]!
+}
+
+
+# Define mutations here
+extend type Mutation {
+  createSeller(input: SellerInput!): Seller! @hasRole(roles: ["User"])
+}

@@ -1,0 +1,170 @@
+# scalar Date
+
+type Product {
+  id: ID!
+  createdAt: Time!
+  updatedAt: Time!
+  publishedAt: Time
+  # dataId: String!
+  # Product type
+  # productType: ProductType!
+  seller: Seller!
+  active: Boolean!
+  name: String!
+  slug: String!
+  code: String
+  # currency: String!
+  # priceAmount: Float!
+  description: String!
+  descriptionJson: String!
+  # category: CategoryType!
+  extra: String
+  publicationDate: Time
+  isPublished: Boolean!
+  variants: [ProductVariant]
+  publishedScope: String
+  # price: Money
+  color: String
+  colorFamily: String
+  brand: String
+
+}
+
+type ProductVariant {
+  id: ID!
+  sku: String!
+  name: String!
+  taxable: Boolean
+  barcode: String
+  inventoryQuantity: Int
+  weight: Float
+  weightUnit: String
+  requiresShipping: Boolean
+  grams: Float
+  compareAtPrice: Float
+  price: Float
+  createdAt: Time!
+  updatedAt: Time!
+  trackInventory: Boolean
+  quantityAllocated: Int
+  product: Product
+}
+
+
+# type Money {
+#  currency: String!
+#  amount: Float!
+#  localized: String!
+# }
+
+
+# type ProductVariantType implements Node {
+#   id: ID!
+#   sku: String!
+#   name: String!
+#   product: Product!
+#   trackInventory: Boolean!
+#   quantity: Int!
+#   quantityAllocated: Int!
+#   stockQuantity: Int!
+#   price: Money
+#   costPrice: Money
+# }
+
+
+# type Category {
+#   id: ID!
+#   createdAt: DateTime!
+#   updatedAt: DateTime!
+#   dataId: String!
+#   name: String!
+#   slug: String!
+#   description: String!
+#   descriptionJson: JSONString!
+#   parent: CategoryType
+#   backgroundImage: String
+#   backgroundImageAlt: String!
+#   lft: Int!
+#   rght: Int!
+#   treeId: Int!
+#   level: Int!
+#   children(
+#     before: String
+#     after: String
+#     first: Int
+#     last: Int
+#   ): CategoryTypeConnection!
+#   products(
+#     before: String
+#     after: String
+#     first: Int
+#     last: Int
+#   ): ProductConnection!
+# }
+
+input ProductVariantInput {
+  sku: String!
+  name: String!
+  taxable: Boolean
+  barcode: String
+  inventoryQuantity: Int
+  weight: Float
+  weightUnit: String
+  requiresShipping: Boolean
+  grams: Float
+  compareAtPrice: Float
+  price: Float
+  trackInventory: Boolean
+  quantityAllocated: Int
+}
+
+
+input ProductCreateInput {
+  publicationDate: Time
+  description: String
+  # category: ID
+  seller: ID
+  isPublished: Boolean
+  name: String
+  code: String
+  extra: String
+  descriptionJson: String
+  active: Boolean
+  color: String
+  brand: String
+  colorFamily: String
+  
+  variants: [ProductVariantInput]
+}
+
+# input CategoryInput {
+#   description: String
+#   descriptionJson: JSONString
+#   name: String
+#   slug: String
+# }
+
+
+
+# type extends Mutation {
+#   createProduct(input: ProductCreateInput): Product
+#   createCategory(input: CategoryInput): Category
+# }
+
+# List Types
+type Products {
+  count: Int
+  list: [Product!]!
+}
+
+
+# Define mutations here
+extend type Mutation {
+  createProduct(input: ProductCreateInput!): Product
+}
+
+# extend queries
+extend type Query {
+  products(id: ID): Products!
+  sellerProducts(id: ID): Products!
+}
