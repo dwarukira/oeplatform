@@ -3,6 +3,7 @@ import { Layout, Menu, Icon } from "antd";
 import styled from "styled-components";
 import { Link, RouteComponentProps, Location } from "@reach/router";
 import Logo from "../Logo";
+import routes from "../../routes";
 
 const { Header, Sider, Content } = Layout;
 const { SubMenu } = Menu;
@@ -69,11 +70,14 @@ class DashboardLayout extends React.Component<IProps> {
               <Icon type="profile" />
               <span>Content</span>
             </Menu.Item>
-            <Menu.Item key="4">
+            <Menu.Item key={routes.inventory}>
+            <Link to={routes.inventory}>
               <Icon type="video-camera" />
               <span>Inventory</span>
+              </Link>
             </Menu.Item>
             <Menu.Item key="5">
+              
               <Icon type="shopping-cart" />
               <span>Orders</span>
             </Menu.Item>
@@ -89,7 +93,7 @@ class DashboardLayout extends React.Component<IProps> {
               }
             >
               <Menu.Item key="/directory/customers"> <Link to="/directory/customers"> Customers </Link> </Menu.Item>
-             <Menu.Item key="/directory/sellers"> <Link to="/directory/sellers" > Sellers </Link></Menu.Item> 
+             <Menu.Item key="/directory/sellers"> <Link to={routes.directory_sellers} > Sellers </Link></Menu.Item> 
             
               
             </SubMenu>

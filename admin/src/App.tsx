@@ -15,6 +15,7 @@ import SellerDetails from "./pages/Directory/seller_details";
 import RoleCreate from "./pages/Users/roles_new";
 import routes from "./routes";
 import NotFound from "./componets/NotFound";
+import Inventory from "./pages/Inventory/inventory";
 
 const Container = styled.div`
   height: 100vh;
@@ -34,6 +35,7 @@ const App: React.FC = () => {
           <SellerList path={routes.directory_sellers} />
           <SellerDetails path={routes.directory_seller} />
           <RoleCreate path={routes.roles_create} />
+          <Inventory path={routes.inventory} />
         </Router>
       </DashboardLayout>
     </Container>
