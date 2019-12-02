@@ -5,6 +5,15 @@ directive @hasRole(roles: [String]) on OBJECT | FIELD_DEFINITION
 directive @isAuthenticated on FIELD | FIELD_DEFINITION
 
 
+type Address {
+  id: ID!
+  street: String
+  number: String
+  country: String
+  city: String
+  postCode: String
+}
+
 # Types
 type User {
   id: ID!
@@ -23,7 +32,7 @@ type User {
   lastLogin: Time
   status: UserStatus
   roles: [Role]
-
+  addresses: [Address]
 }
 
 enum UserStatus {

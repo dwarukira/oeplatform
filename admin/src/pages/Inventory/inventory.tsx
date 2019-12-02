@@ -77,7 +77,7 @@ const Inventory: FunctionComponent<RouteComponentProps> = () => {
 
   return (
     <>
-      <Title> Listing all user accounts </Title>
+      <Title> Listing all Inventory accounts </Title>
       <Table
         loading={loading}
         rowSelection={rowSelection}

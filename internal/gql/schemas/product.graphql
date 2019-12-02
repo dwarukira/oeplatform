@@ -137,6 +137,10 @@ input ProductCreateInput {
   variants: [ProductVariantInput]
 }
 
+input CreateProductVariantInput {
+  product: ID!
+  variants: [ProductVariantInput!]
+}
 # input CategoryInput {
 #   description: String
 #   descriptionJson: JSONString
@@ -161,6 +165,7 @@ type Products {
 # Define mutations here
 extend type Mutation {
   createProduct(input: ProductCreateInput!): Product
+  createProductVariant(input: CreateProductVariantInput!): ProductVariant
 }
 
 # extend queries

@@ -76,6 +76,8 @@ func AutoMigrate(db *gorm.DB) error {
 		RolePermission{},
 		// SellerProduct{},
 		User{},
+		Address{},
+		Category{},
 	)
 	return db.Error
 }

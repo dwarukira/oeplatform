@@ -43,6 +43,7 @@ type User struct {
 	Roles               []Role       `gorm:"many2many:user_roles;association_autoupdate:false;association_autocreate:false"`
 	Permissions         []Permission `gorm:"many2many:user_permissions;association_autoupdate:false;association_autocreate:false"`
 	Logins              []LoginHistory
+	Addresses           []Address
 }
 
 // TableName returns the database table name for the users model.

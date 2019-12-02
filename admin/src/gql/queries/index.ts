@@ -109,3 +109,29 @@ export const GET_SELLERS = gql`
     }
   }
 `;
+
+export const GET_PRODUCTS = gql`
+  query Products($id: ID) {
+    products(id: $id) {
+      list {
+        name
+        id
+        publishedAt
+        description
+        code
+        description
+        seller {
+          id
+          bank {
+            name
+          }
+          user {
+            name
+            email
+            id
+          }
+        }
+      }
+    }
+  }
+`;

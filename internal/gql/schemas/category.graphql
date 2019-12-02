@@ -1,0 +1,26 @@
+type Category {
+  id: ID!
+  name: String
+  createAt: Time!
+  updatedAt: Time!
+  description: String
+}
+
+input CategoryInput {
+  name: String!
+  description: String
+}
+
+type Categories {
+  count: Int
+  list: [Category!]!
+}
+
+extend type Query {
+  categories(id: ID): Categories 
+}
+
+# Define mutations here
+extend type Mutation {
+  createCategory(input: CategoryInput!): Category!
+}

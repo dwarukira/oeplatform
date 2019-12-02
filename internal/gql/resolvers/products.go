@@ -22,6 +22,12 @@ func (r *mutationResolver) CreateProduct(ctx context.Context, input models.Produ
 	return productCreateUpdate(r, input, user, false)
 }
 
+func (r *mutationResolver) CreateProductVariant(ctx context.Context, input models.CreateProductVariantInput) (*models.ProductVariant, error) {
+	// TODO create a product
+
+	return productVariantCreateUpadate(input)
+}
+
 func (r *queryResolver) Products(ctx context.Context, id *string) (*models.Products, error) {
 	return productsList(r, id)
 }
@@ -100,6 +106,11 @@ func productsList(r *queryResolver, id *string) (*models.Products, error) {
 	}
 
 	return record, db.Error
+}
+
+func productVariantCreateUpadate(r *mutationResolver, input models.CreateProductVariantInput, update bool, ids ...string) (*models.ProductVariant, error) {
+
+	return nil, nil
 }
 
 func productCreateUpdate(r *mutationResolver, input models.ProductCreateInput, user *dbm.User, update bool, ids ...string) (*models.Product, error) {

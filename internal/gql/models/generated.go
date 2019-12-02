@@ -9,6 +9,15 @@ import (
 	"time"
 )
 
+type Address struct {
+	ID       string  `json:"id"`
+	Street   *string `json:"street"`
+	Number   *string `json:"number"`
+	Country  *string `json:"country"`
+	City     *string `json:"city"`
+	PostCode *string `json:"postCode"`
+}
+
 type Authuser struct {
 	User  *User   `json:"user"`
 	Token *string `json:"token"`
@@ -29,6 +38,29 @@ type BankInput struct {
 	HolderName    string `json:"holderName"`
 	AccountNumber string `json:"accountNumber"`
 	Location      string `json:"location"`
+}
+
+type Categories struct {
+	Count *int        `json:"count"`
+	List  []*Category `json:"list"`
+}
+
+type Category struct {
+	ID          string    `json:"id"`
+	Name        *string   `json:"name"`
+	CreateAt    time.Time `json:"createAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
+	Description *string   `json:"description"`
+}
+
+type CategoryInput struct {
+	Name        string  `json:"name"`
+	Description *string `json:"description"`
+}
+
+type CreateProductVariantInput struct {
+	Product  string                 `json:"product"`
+	Variants []*ProductVariantInput `json:"variants"`
 }
 
 type Permission struct {
@@ -184,6 +216,7 @@ type User struct {
 	LastLogin   *time.Time     `json:"lastLogin"`
 	Status      *UserStatus    `json:"status"`
 	Roles       []*Role        `json:"roles"`
+	Addresses   []*Address     `json:"addresses"`
 }
 
 type UserInput struct {

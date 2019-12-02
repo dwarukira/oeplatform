@@ -1,5 +1,7 @@
 package jwt
 
+import "net/http"
+
 // type Claims struct {
 // 	jwt.StandardClaims
 
@@ -10,3 +12,13 @@ package jwt
 // func AccessToken() (*jwt.Token, string, error) {
 
 // }
+
+type errorHandler func(w http.ResponseWriter, r *http.Request, err string)
+
+// TokenExtractor is a function that takes a request as input and returns
+// either a token or an error
+type TokenExtractor func(r *http.Request) (string, error)
+
+type Option struct {
+	Issuer string
+}
