@@ -35,7 +35,6 @@ type User struct {
 	FirstName           *string
 	LastName            *string
 	Location            *string
-	UserStatus          UserStatus `json:"status" sql:"type:user_status"`
 	AvatarURL           *string    `gorm:"size:1024"`
 	Description         *string    `gorm:"size:1024"`
 	LastLogin           *time.Time `gorm:"INDEX;NOT NULL;DEFAULT:CURRENT_TIMESTAMP"`
