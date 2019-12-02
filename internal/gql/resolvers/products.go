@@ -25,7 +25,9 @@ func (r *mutationResolver) CreateProduct(ctx context.Context, input models.Produ
 func (r *mutationResolver) CreateProductVariant(ctx context.Context, input models.CreateProductVariantInput) (*models.ProductVariant, error) {
 	// TODO create a product
 
-	return productVariantCreateUpadate(input)
+	// return productVariantCreateUpadate(input)
+
+	return nil, nil
 }
 
 func (r *queryResolver) Products(ctx context.Context, id *string) (*models.Products, error) {
