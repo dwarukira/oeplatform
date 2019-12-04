@@ -46,6 +46,18 @@ type User struct {
 	Addresses           []Address
 }
 
+func (user *User) GetPermissions() []Permission {
+	var permissions []Permission
+
+	for _, role := range user.Roles {
+		for _, per := range role.Permissions {
+			permissions = append(permissions, per)
+		}
+	}
+
+	return permissions
+}
+
 // TableName returns the database table name for the users model.
 // func (User) TableName() string {
 // 	return tableName("users")
@@ -155,9 +167,9 @@ type UserPermission struct {
 func (o *ORM) GetUser(id string) (*User, error) {
 	db := o.DB.New()
 	up := &User{}
-
 	db.Preloads("Logins")
-
+	db.Preloads("Roles")
+	db.Preloads("Roles.Permissions")
 	if err := db.First(up, id).Error; err != nil {
 		return nil, err
 	}

@@ -28,7 +28,6 @@ func Run(config *conf.GlobalConfiguration, orm *models.ORM) {
 	r.Use(middleware.GinContextToContextMiddleware())
 
 	g := r.Group(config.Graphql.Path)
-
 	g.POST("", handlers.GraphqlHandler(orm))
 	// logger.Info("GraphQL @ ", gqlPath)
 	// Playground handler

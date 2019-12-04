@@ -7,6 +7,8 @@ import (
 	"io"
 	"strconv"
 	"time"
+
+	"github.com/99designs/gqlgen/graphql"
 )
 
 type Address struct {
@@ -61,6 +63,13 @@ type CategoryInput struct {
 type CreateProductVariantInput struct {
 	Product  string                 `json:"product"`
 	Variants []*ProductVariantInput `json:"variants"`
+}
+
+// The `File` type, represents the response of uploading a file.
+type File struct {
+	ID      int    `json:"id"`
+	Name    string `json:"name"`
+	Content string `json:"content"`
 }
 
 type Permission struct {
@@ -197,6 +206,18 @@ type Sellers struct {
 type TokenCreateInput struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+// The `UploadFile` type, represents the request for uploading a file with certain payload.
+type UploadFile struct {
+	ProductVariantID string         `json:"productVariantID"`
+	File             graphql.Upload `json:"file"`
+}
+
+// The `product file upload`
+type UploadProductPhoto struct {
+	ProductVariantID string        `json:"productVariantID"`
+	Files            []*UploadFile `json:"files"`
 }
 
 type User struct {

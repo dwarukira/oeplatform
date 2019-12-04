@@ -102,6 +102,7 @@ export const GET_SELLERS = gql`
           description
           createdAt
           updatedAt
+          lastLogin
           email
           id
         }
@@ -119,9 +120,9 @@ export const GET_PRODUCTS = gql`
         publishedAt
         description
         code
-        description
         seller {
           id
+          name
           bank {
             name
           }

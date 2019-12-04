@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from "react";
 import { RouteComponentProps, navigate } from "@reach/router";
-import { PageHeader, Row, Col, Layout, Card, Avatar, Tabs } from "antd";
+import { PageHeader, Row, Col, Layout, Card, Avatar, Tabs, Divider } from "antd";
 import routes from "../../routes";
 import { Padding, PaddingTop } from "../../componets/Padding";
 import { Center } from "../../componets/Center";
@@ -24,7 +24,9 @@ const SellerDetails: FunctionComponent<RouteComponentProps> = (props: any) => {
 
   function getSeller() {
     if (error || loading) {
-      return {}
+      return {
+        user: {}
+      }
     }
     return data.sellers.list[0];
   }
@@ -37,6 +39,7 @@ const SellerDetails: FunctionComponent<RouteComponentProps> = (props: any) => {
         title=""
         subTitle="Back to sellers  list"
       />
+
 
       <Row>
         <Col span={18} push={6}>
@@ -78,6 +81,23 @@ const SellerDetails: FunctionComponent<RouteComponentProps> = (props: any) => {
               <PaddingTop />
               <Center>
                 <Title> { getSeller().name } </Title>
+
+                <Divider />
+                <Title>  Contact Info </Title>
+                <p> Email </p>
+                { getSeller().user.email }
+
+                <p> Phone </p>
+                { getSeller().phone }
+
+
+                <Divider />
+                <Title>  Account Info </Title>
+                <p> Member Since </p>
+                { new Date(getSeller().user.createdAt).toUTCString() }
+                <p> Last Login </p>
+                { new Date(getSeller().user.lastLogin).toUTCString() }
+                <p> Status </p>
               </Center>
             </Card>
           </Padding>

@@ -3,7 +3,7 @@ import React, { FunctionComponent } from "react";
 import { Table } from "antd";
 import { RouteComponentProps, Link } from "@reach/router";
 import { useQuery } from "@apollo/react-hooks";
-import { GET_USERS } from "../../gql/queries";
+import { GET_PRODUCTS } from "../../gql/queries";
 import { Title } from "../../componets/Heading";
 
 
@@ -15,35 +15,26 @@ const columns = [
   {
     title: "ID",
     dataIndex: "id",
-    render: (text: string) => <Link to={`/user/${text}`}>{truncate(text)}</Link>
-  },
-
-  {
-    title: "Username",
-    dataIndex: "name"
+    render: (text: string) => <Link to={`/product/${text}`}>{truncate(text)}</Link>
   },
 
   {
     title: "Name",
     dataIndex: "name"
   },
+  {
+    title: "Seller",
+    dataIndex: "seller"
+  },
 
   {
-    title: "Email",
-    dataIndex: "email"
+    title: "Description",
+    dataIndex: "description"
   },
   {
-    title: "Role",
-    dataIndex: "role"
+    title: "publishedAt",
+    dataIndex: "publishedAt"
   },
-  {
-    title: "Status",
-    dataIndex: "status"
-  },
-  {
-    title: "Last Login",
-    dataIndex: "last_login"
-  }
 ];
 
 // rowSelection object indicates the need for row selection
@@ -62,16 +53,17 @@ const rowSelection = {
 };
 
 const Inventory: FunctionComponent<RouteComponentProps> = () => {
-  const { loading, error, data } = useQuery(GET_USERS);
+  const { loading, error, data } = useQuery(GET_PRODUCTS);
 
   const hasData = data !== undefined && !error;
   function createColumnData() {
-    return data.users.list.map((item: any) => ({
+    return data.products.list.map((item: any) => ({
       key: item.id,
       id: item.id,
       name: item.name,
-      email: item.email,
-      last_login: new Date(item.lastLogin).toLocaleString()
+      description: item.description,
+      seller: item.seller.name,
+      publishedAt: new Date(item.publishedAt).toLocaleString()
     }));
   }
 

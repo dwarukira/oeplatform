@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	github.com/99designs/gqlgen v0.10.1
+	github.com/aws/aws-sdk-go v1.25.45
 	github.com/c-bata/go-prompt v0.2.3 // indirect
 	github.com/cmelgarejo/go-gql-server v0.0.0-20190728060617-a516f3cc65b4 // indirect
 	github.com/coreos/go-etcd v2.0.0+incompatible // indirect
@@ -15,6 +16,7 @@ require (
 	github.com/jinzhu/gorm v1.9.11
 	github.com/joho/godotenv v1.3.0
 	github.com/kelseyhightower/envconfig v1.4.0
+	github.com/mailgun/mailgun-go/v3 v3.6.2
 	github.com/markbates/goth v1.59.0 // indirect
 	github.com/mattn/go-runewidth v0.0.6 // indirect
 	github.com/mitchellh/go-homedir v1.1.0

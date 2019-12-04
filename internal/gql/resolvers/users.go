@@ -94,8 +94,8 @@ func userCreateUpdate(r *mutationResolver, input models.UserInput, update bool, 
 	if !update {
 		role, _ := r.ORM.DefaultRole()
 		dbo.Roles = []dbm.Role{*role}
-		db = db.Create(dbo).First(dbo) // Create the user
 		dbo.Password = middleware.GeneratePassword(*input.Password)
+		db = db.Create(dbo).First(dbo) // Create the user
 	} else {
 		db = db.Model(&dbo).Update(dbo).First(dbo) // Or update it
 	}

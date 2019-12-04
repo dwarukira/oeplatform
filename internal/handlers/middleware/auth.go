@@ -157,6 +157,7 @@ func CreateJWTToken(user models.User, seller bool) string {
 
 	m["roles"] = []string{"oe.user"}
 
+	m["scopes"] = user.GetPermissions()
 	if seller {
 		m["roles"] = []string{"oe.seller"}
 	}
@@ -170,7 +171,7 @@ func CreateJWTToken(user models.User, seller bool) string {
 	tk.ExpiresAt = ExpireIn(3 * time.Hour)
 	tk.Issuer = "auth.oe.co.ke"
 	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), tk)
-
+	// TODO read key from  env
 	tokenString, _ := token.SignedString([]byte("dsdsdsds"))
 	return tokenString
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"oe/internal/gql/models"
 	"oe/internal/gql/tf"
+	"oe/pkg/mail"
 
 	dbm "oe/internal/models"
 
@@ -57,7 +58,10 @@ func sellerCreateUpdate(r *mutationResolver, input models.SellerInput, user *dbm
 		return nil, err
 	}
 	db = db.Commit()
-
+	// TODO update the password
+	if !update {
+		mail.SendSimpleMessage("https://api.mailgun.net/v3/sandbox561903decfef4126bf7dce12f4e91d98.mailgun.org", "842c142f15d727261444bc3634cfe13b-c27bf672-10c53ddc")
+	}
 	return gql, err
 }
 

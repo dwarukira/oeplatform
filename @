@@ -45,54 +45,25 @@ func (r *mutationResolver) SingleUpload(ctx context.Context, file graphql.Upload
 	return nil, err
 }
 
-func (r *mutationResolver) AddProductPhoto(ctx context.Context, files []*graphql.Upload, productVariantID string) ([]*models.File, error) {
-	productVariant, err := r.ORM.GetProductVariant(productVariantID)
-	fmt.Println(productVariant, "----------->")
+func (r *mutationResolver) AddProductPhoto(ctx context.Context, req models.UploadProductPhoto) (*models.File, error) {
+	productVariant, _ := r.ORM.GetProductVariant(req.ProductVariantID)
 	db := r.ORM.DB.New().Begin()
-	var images []*dbm.Image
-
-	fmt.Println("HAHHA", productVariant, "---->", err, "we need sime thing")
-	for i := range files {
-		content, err := ioutil.ReadAll(files[i].File)
+	for i := range req.Files {
+		content, err := ioutil.ReadAll(req.Files[i].File.File)
 		if err != nil {
-			return []*models.File{}, err
+			return &models.File{}, err
 		}
-		_, url, _ := bucket.UploadFile(content)
-		images = append(images, &dbm.Image{
+		object, _ := bucket.UploadFile(content)
+		productVariant.Images = append(productVariant.Images, &dbm.Image{
 			Name:           "Image nname",
-			Source:         url,
+			Source:         string(*object.ETag),
 			ProductVariant: *productVariant,
 		})
+		//	db = db.Model(&productVariant).Update(productVariant)
 	}
 
-	db.Model(&productVariant).Association("Images").Append(images)
-	return []*models.File{}, nil
-}
-
-func (r *mutationResolver) MultipleUploadWithPayload(ctx context.Context, req []*models.UploadFile) ([]*models.File, error) {
-	if len(req) == 0 {
-		return nil, errors.New("empty list")
-	}
-
-	productVariant, _ := r.ORM.GetProductVariant(req[0].ProductVariantID)
-	db := r.ORM.DB.New().Begin()
-
-	var images []*dbm.Image
-	for i := range req {
-		content, err := ioutil.ReadAll(req[i].File.File)
-		if err != nil {
-			return []*models.File{}, err
-		}
-		_, url, _ := bucket.UploadFile(content)
-		images = append(images, &dbm.Image{
-			Name:           "Image nname",
-			Source:         url,
-			ProductVariant: *productVariant,
-		})
-	}
-	db.Model(&productVariant).Association("Images").Append(images)
-	db.Commit()
-	return nil, nil
+	// db.Commit()
+	return &models.File{}, nil
 }
 
 func (r *queryResolver) Products(ctx context.Context, id *string) (*models.Products, error) {
@@ -157,7 +128,6 @@ func productsList(r *queryResolver, id *string) (*models.Products, error) {
 
 	db = db.Preload("Seller.User")
 	db = db.Preload("Seller.Bank")
-	db = db.Preload("Variants")
 
 	if id != nil {
 		db = db.Where(whereID, *id)

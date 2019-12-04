@@ -65,12 +65,13 @@ func DBProductToGQLProduct(i *dbm.Product) (o *gql.Product, err error) {
 	// 	fmt.Println(s, err, "We have")
 	// }
 	o = &gql.Product{
-		ID:        i.ID,
-		Name:      i.Name,
-		CreatedAt: i.CreatedAt,
-		UpdatedAt: *i.UpdatedAt,
-		Variants:  variants,
-		Seller:    seller,
+		ID:          i.ID,
+		Name:        i.Name,
+		CreatedAt:   i.CreatedAt,
+		UpdatedAt:   *i.UpdatedAt,
+		Variants:    variants,
+		Description: i.Description,
+		Seller:      seller,
 	}
 
 	return o, err

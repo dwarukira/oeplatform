@@ -51,6 +51,29 @@ type ProductVariant {
 }
 
 
+"The `Upload` scalar type represents a multipart file upload."
+scalar Upload
+
+"The `File` type, represents the response of uploading a file."
+type File {
+    id: Int!
+    name: String!
+    content: String!
+}
+
+"The `UploadFile` type, represents the request for uploading a file with certain payload."
+input UploadFile {
+  productVariantID: ID!
+  name: String!
+  file: Upload!
+}
+
+"The `product file upload` "
+input UploadProductPhoto {
+  productVariantID: ID!
+  files: [UploadFile!]!
+}
+
 # type Money {
 #  currency: String!
 #  amount: Float!
@@ -166,6 +189,10 @@ type Products {
 extend type Mutation {
   createProduct(input: ProductCreateInput!): Product
   createProductVariant(input: CreateProductVariantInput!): ProductVariant
+  addProductPhoto(files: [Upload!], productVariantID: ID!): [File!] 
+  singleUpload(file: Upload!): File!
+  multipleUploadWithPayload(req: [UploadFile!]!): [File!]!
+
 }
 
 # extend queries

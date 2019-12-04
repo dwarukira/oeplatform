@@ -78,6 +78,7 @@ func AutoMigrate(db *gorm.DB) error {
 		User{},
 		Address{},
 		Category{},
+		Image{},
 	)
 	return db.Error
 }
@@ -100,7 +101,9 @@ func (o *ORM) FindUserByJWT(userID string) (*User, error) {
 func (o *ORM) FindUserByEmail(email string) (*User, error) {
 	db := o.DB.New()
 	up := &User{}
-	if err := db.Where("email = ?", email).First(up).Error; err != nil {
+
+	db = db.Preload("Roles.Permissions")
+	if err := db.Preload("Roles").Where("email = ?", email).First(up).Error; err != nil {
 		return nil, err
 	}
 	return up, nil
