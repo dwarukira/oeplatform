@@ -193,6 +193,7 @@ type ComplexityRoot struct {
 		ID          func(childComplexity int) int
 		Name        func(childComplexity int) int
 		Phone       func(childComplexity int) int
+		Products    func(childComplexity int) int
 		UpdatedAt   func(childComplexity int) int
 		User        func(childComplexity int) int
 		Website     func(childComplexity int) int
@@ -1073,6 +1074,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Seller.Phone(childComplexity), true
 
+	case "Seller.products":
+		if e.complexity.Seller.Products == nil {
+			break
+		}
+
+		return e.complexity.Seller.Products(childComplexity), true
+
 	case "Seller.updatedAt":
 		if e.complexity.Seller.UpdatedAt == nil {
 			break
@@ -1487,6 +1495,7 @@ type File {
 "The ` + "`" + `UploadFile` + "`" + ` type, represents the request for uploading a file with certain payload."
 input UploadFile {
   productVariantID: ID!
+  name: String!
   file: Upload!
 }
 
@@ -1770,7 +1779,7 @@ type Seller {
   displayName: String
   createdAt: Time!
   updatedAt: Time
-
+  products: [Product]
 }
 
 
@@ -1810,7 +1819,8 @@ type Sellers {
 # Define mutations here
 extend type Mutation {
   createSeller(input: SellerInput!): Seller! @hasRole(roles: ["User"])
-}`},
+}
+`},
 )
 
 // endregion ************************** generated!.gotpl **************************
@@ -5759,6 +5769,37 @@ func (ec *executionContext) _Seller_updatedAt(ctx context.Context, field graphql
 	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Seller_products(ctx context.Context, field graphql.CollectedField, obj *models.Seller) (ret graphql.Marshaler) {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+		ec.Tracer.EndFieldExecution(ctx)
+	}()
+	rctx := &graphql.ResolverContext{
+		Object:   "Seller",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Products, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Product)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOProduct2ᚕᚖoeᚋinternalᚋgqlᚋmodelsᚐProduct(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Sellers_count(ctx context.Context, field graphql.CollectedField, obj *models.Sellers) (ret graphql.Marshaler) {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() {
@@ -8258,6 +8299,12 @@ func (ec *executionContext) unmarshalInputUploadFile(ctx context.Context, obj in
 			if err != nil {
 				return it, err
 			}
+		case "name":
+			var err error
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "file":
 			var err error
 			it.File, err = ec.unmarshalNUpload2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx, v)
@@ -9127,6 +9174,8 @@ func (ec *executionContext) _Seller(ctx context.Context, sel ast.SelectionSet, o
 			}
 		case "updatedAt":
 			out.Values[i] = ec._Seller_updatedAt(ctx, field, obj)
+		case "products":
+			out.Values[i] = ec._Seller_products(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -10614,6 +10663,46 @@ func (ec *executionContext) marshalOProduct2oeᚋinternalᚋgqlᚋmodelsᚐProdu
 	return ec._Product(ctx, sel, &v)
 }
 
+func (ec *executionContext) marshalOProduct2ᚕᚖoeᚋinternalᚋgqlᚋmodelsᚐProduct(ctx context.Context, sel ast.SelectionSet, v []*models.Product) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		rctx := &graphql.ResolverContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithResolverContext(ctx, rctx)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOProduct2ᚖoeᚋinternalᚋgqlᚋmodelsᚐProduct(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
 func (ec *executionContext) marshalOProduct2ᚖoeᚋinternalᚋgqlᚋmodelsᚐProduct(ctx context.Context, sel ast.SelectionSet, v *models.Product) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -10688,7 +10777,7 @@ func (ec *executionContext) unmarshalOProductVariantInput2ᚕᚖoeᚋinternalᚋ
 	var err error
 	res := make([]*models.ProductVariantInput, len(vSlice))
 	for i := range vSlice {
-		res[i], err = ec.unmarshalOProductVariantInput2ᚖoeᚋinternalᚋgqlᚋmodelsᚐProductVariantInput(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNProductVariantInput2ᚖoeᚋinternalᚋgqlᚋmodelsᚐProductVariantInput(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}

@@ -76,6 +76,7 @@ func AutoMigrate(db *gorm.DB) error {
 		RolePermission{},
 		// SellerProduct{},
 		User{},
+		UserProfile{},
 		Address{},
 		Category{},
 		Image{},
@@ -94,7 +95,7 @@ func (o *ORM) FindUserByJWT(userID string) (*User, error) {
 	if err := db.Preload("Roles").Where("id = ?", userID).First(up).Error; err != nil {
 		return nil, err
 	}
-	logrus.Info(up.Roles, up.Permissions, "------>")
+	//logrus.Info(up.Roles, up.Permissions, "------>")
 	return up, nil
 }
 

@@ -188,6 +188,7 @@ type Seller struct {
 	DisplayName *string    `json:"displayName"`
 	CreatedAt   time.Time  `json:"createdAt"`
 	UpdatedAt   *time.Time `json:"updatedAt"`
+	Products    []*Product `json:"products"`
 }
 
 type SellerInput struct {
@@ -211,6 +212,7 @@ type TokenCreateInput struct {
 // The `UploadFile` type, represents the request for uploading a file with certain payload.
 type UploadFile struct {
 	ProductVariantID string         `json:"productVariantID"`
+	Name             string         `json:"name"`
 	File             graphql.Upload `json:"file"`
 }
 

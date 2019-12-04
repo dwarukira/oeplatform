@@ -50,6 +50,17 @@ func DBSellerToGQLSeller(i *dbm.Seller) (o *gql.Seller, err error) {
 	user, err := DBUserToGQLUser(&i.User)
 	fmt.Println(i.Bank)
 	bank, _ := DBBankToGQLBank(i.Bank)
+
+	products := []*gql.Product{}
+
+	for _, vrec := range i.Products {
+		if rec, err := DBProductToGQLProduct(&vrec); err != nil {
+			fmt.Println("error")
+		} else {
+			products = append(products, rec)
+		}
+
+	}
 	o = &gql.Seller{
 		ID:          i.ID,
 		Name:        i.Name,
@@ -57,6 +68,7 @@ func DBSellerToGQLSeller(i *dbm.Seller) (o *gql.Seller, err error) {
 		DisplayName: &i.DisplayName,
 		User:        user,
 		Bank:        bank,
+		Products:    products,
 		CreatedAt:   i.CreatedAt,
 		UpdatedAt:   i.UpdatedAt,
 	}

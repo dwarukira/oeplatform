@@ -71,13 +71,18 @@ func sellerList(r *queryResolver, id *string) (*models.Sellers, error) {
 	dbRecords := []*dbm.Seller{}
 
 	db := r.ORM.DB.New()
+	//db = db.Set("gorm:auto_preload", true)
 
-	db = db.Preload("User").Preload("Bank")
+	db = db.Preload("User").Preload("Bank").Preload("Products")
+	db = db.Preload("Products.Seller")
+	db = db.Preload("Products.Variants")
+	db = db.Preload("Products.Seller.Bank")
 	if id != nil {
 		db = db.Where(whereID, *id)
 	}
-
 	db = db.Find(&dbRecords).Count((&record.Count))
+
+	fmt.Println(dbRecords, "I was here")
 
 	for _, dbRec := range dbRecords {
 		if rec, err := tf.DBSellerToGQLSeller(dbRec); err != nil {

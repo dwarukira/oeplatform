@@ -27,7 +27,7 @@ type Seller struct {
 	Bank        *Bank
 	BankID      string
 
-	Product []Product
+	Products []Product
 }
 
 // TableName returns the database table name for the Seller model.

@@ -9,7 +9,7 @@ type Seller {
   displayName: String
   createdAt: Time!
   updatedAt: Time
-
+  products: [Product]
 }
 
 
