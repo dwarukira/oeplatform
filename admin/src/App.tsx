@@ -3,7 +3,7 @@ import logo from "./logo.svg";
 import "./App.css";
 import "antd/dist/antd.css";
 import styled from "styled-components";
-import { Router, Link } from "@reach/router";
+import { Router } from "@reach/router";
 
 import DashboardLayout from "./componets/layout";
 import UserList from "./pages/Users/list";

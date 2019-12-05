@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from "react";
 import { RouteComponentProps, Link } from "@reach/router";
 
-import { Table } from "antd";
+import { Table, Col, Row } from "antd";
 import { renderCardContent } from "../../componets/Card";
 import { useQuery } from "@apollo/react-hooks";
 import { Title } from "../../componets/Heading";
@@ -50,9 +50,6 @@ const columns = [
   }
 ];
 
-
-
-
 // rowSelection object indicates the need for row selection
 const rowSelection = {
   onChange: (selectedRowKeys: any, selectedRows: any) => {
@@ -73,12 +70,9 @@ const SellerList: FunctionComponent<RouteComponentProps> = (): JSX.Element => {
 
   const content = {
     title: "Total number of sellers",
-    total: data ? data.sellers.count : 0,
+    total: data ? data.sellers.count : 0
   };
 
- 
-
-  
   const hasData = data !== undefined;
   function createColumnData() {
     return data.sellers.list.map((item: any) => ({
@@ -101,7 +95,12 @@ const SellerList: FunctionComponent<RouteComponentProps> = (): JSX.Element => {
     <div>
       <Title> Listing all sellers </Title>
       <PaddingTop />
-      {renderCardContent(content, "1")}
+      <Row gutter={16}>
+        <Col className="gutter-row" span={6}>
+          {renderCardContent(content, "1")}
+        </Col>
+      </Row>
+
       <PaddingTop />
       <Table
         loading={loading}

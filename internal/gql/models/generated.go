@@ -72,6 +72,11 @@ type CreateProductVariantInput struct {
 	Variants []*ProductVariantInput `json:"variants"`
 }
 
+type FilterProduct struct {
+	Active *bool   `json:"active"`
+	Seller *string `json:"seller"`
+}
+
 // The `Image` type, represents the response of uploading a file.
 type Image struct {
 	ID        string    `json:"id"`

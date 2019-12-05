@@ -116,8 +116,8 @@ func (r *mutationResolver) MultipleUploadWithPayload(ctx context.Context, req []
 	return imagesresponse, nil
 }
 
-func (r *queryResolver) Products(ctx context.Context, id *string) (*models.Products, error) {
-	return productsList(r, id)
+func (r *queryResolver) Products(ctx context.Context, id *string, filter *models.FilterProduct) (*models.Products, error) {
+	return productsList(r, id, filter)
 }
 
 func (r *queryResolver) SellerProducts(ctx context.Context, id *string) (*models.Products, error) {
@@ -168,19 +168,19 @@ func sellerProductList(r *queryResolver, seller *dbm.Seller, id *string) (*model
 
 }
 
-func productsList(r *queryResolver, id *string) (*models.Products, error) {
-
+func productsList(r *queryResolver, id *string, filter *models.FilterProduct) (*models.Products, error) {
 	whereID := "id = ?"
 	record := &models.Products{}
 	dbRecords := []*dbm.Product{}
-
 	db := r.ORM.DB.New()
-
 	db = db.Preload("Seller.User")
 	db = db.Preload("Seller.Bank")
 	db = db.Preload("Variants")
 	db = db.Preload("Variants.Images")
 
+	if filter != nil {
+		db = db.Scopes(dbm.SellerScope(filter.Seller))
+	}
 	if id != nil {
 		db = db.Where(whereID, *id)
 	}

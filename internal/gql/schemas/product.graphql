@@ -173,7 +173,10 @@ input CreateProductVariantInput {
 #   slug: String
 # }
 
-
+input FilterProduct {
+  active: Boolean
+  seller: ID
+}
 
 # type extends Mutation {
 #   createProduct(input: ProductCreateInput): Product
@@ -197,8 +200,10 @@ extend type Mutation {
 
 }
 
+
+
 # extend queries
 extend type Query {
-  products(id: ID): Products!
+  products(id: ID, filter: FilterProduct): Products!
   sellerProducts(id: ID): Products!
 }

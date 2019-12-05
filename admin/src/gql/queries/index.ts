@@ -96,6 +96,17 @@ export const GET_SELLERS = gql`
         updatedAt
         displayName
         phone
+        products {
+          id
+          name
+          isPublished
+          description
+          createdAt
+          variants {
+            id
+            name
+          }
+        }
 
         user {
           name
@@ -112,8 +123,10 @@ export const GET_SELLERS = gql`
 `;
 
 export const GET_PRODUCTS = gql`
-  query Products($id: ID) {
-    products(id: $id) {
+  query Products($id: ID, $seller: ID) {
+    products(id: $id, filter: {
+      seller: $seller
+    }) {
       list {
         name
         id

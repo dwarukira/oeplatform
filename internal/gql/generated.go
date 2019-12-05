@@ -171,7 +171,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		Categories     func(childComplexity int, id *string) int
-		Products       func(childComplexity int, id *string) int
+		Products       func(childComplexity int, id *string, filter *models.FilterProduct) int
 		Roles          func(childComplexity int, id *string) int
 		SellerProducts func(childComplexity int, id *string) int
 		Sellers        func(childComplexity int, id *string) int
@@ -271,7 +271,7 @@ type QueryResolver interface {
 	Sellers(ctx context.Context, id *string) (*models.Sellers, error)
 	Roles(ctx context.Context, id *string) (*models.Roles, error)
 	Categories(ctx context.Context, id *string) (*models.Categories, error)
-	Products(ctx context.Context, id *string) (*models.Products, error)
+	Products(ctx context.Context, id *string, filter *models.FilterProduct) (*models.Products, error)
 	SellerProducts(ctx context.Context, id *string) (*models.Products, error)
 }
 
@@ -974,7 +974,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Products(childComplexity, args["id"].(*string)), true
+		return e.complexity.Query.Products(childComplexity, args["id"].(*string), args["filter"].(*models.FilterProduct)), true
 
 	case "Query.roles":
 		if e.complexity.Query.Roles == nil {
@@ -1659,7 +1659,10 @@ input CreateProductVariantInput {
 #   slug: String
 # }
 
-
+input FilterProduct {
+  active: Boolean
+  seller: ID
+}
 
 # type extends Mutation {
 #   createProduct(input: ProductCreateInput): Product
@@ -1683,9 +1686,11 @@ extend type Mutation {
 
 }
 
+
+
 # extend queries
 extend type Query {
-  products(id: ID): Products!
+  products(id: ID, filter: FilterProduct): Products!
   sellerProducts(id: ID): Products!
 }
 `},
@@ -2135,6 +2140,14 @@ func (ec *executionContext) field_Query_products_args(ctx context.Context, rawAr
 		}
 	}
 	args["id"] = arg0
+	var arg1 *models.FilterProduct
+	if tmp, ok := rawArgs["filter"]; ok {
+		arg1, err = ec.unmarshalOFilterProduct2ᚖoeᚋinternalᚋgqlᚋmodelsᚐFilterProduct(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["filter"] = arg1
 	return args, nil
 }
 
@@ -5336,7 +5349,7 @@ func (ec *executionContext) _Query_products(ctx context.Context, field graphql.C
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec._fieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Products(rctx, args["id"].(*string))
+		return ec.resolvers.Query().Products(rctx, args["id"].(*string), args["filter"].(*models.FilterProduct))
 	})
 
 	if resTmp == nil {
@@ -8281,6 +8294,30 @@ func (ec *executionContext) unmarshalInputCreateProductVariantInput(ctx context.
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputFilterProduct(ctx context.Context, obj interface{}) (models.FilterProduct, error) {
+	var it models.FilterProduct
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "active":
+			var err error
+			it.Active, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "seller":
+			var err error
+			it.Seller, err = ec.unmarshalOID2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputProductCreateInput(ctx context.Context, obj interface{}) (models.ProductCreateInput, error) {
 	var it models.ProductCreateInput
 	var asMap = obj.(map[string]interface{})
@@ -10813,6 +10850,18 @@ func (ec *executionContext) marshalOCategory2ᚖoeᚋinternalᚋgqlᚋmodelsᚐC
 		return graphql.Null
 	}
 	return ec._Category(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOFilterProduct2oeᚋinternalᚋgqlᚋmodelsᚐFilterProduct(ctx context.Context, v interface{}) (models.FilterProduct, error) {
+	return ec.unmarshalInputFilterProduct(ctx, v)
+}
+
+func (ec *executionContext) unmarshalOFilterProduct2ᚖoeᚋinternalᚋgqlᚋmodelsᚐFilterProduct(ctx context.Context, v interface{}) (*models.FilterProduct, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalOFilterProduct2oeᚋinternalᚋgqlᚋmodelsᚐFilterProduct(ctx, v)
+	return &res, err
 }
 
 func (ec *executionContext) unmarshalOFloat2float64(ctx context.Context, v interface{}) (float64, error) {

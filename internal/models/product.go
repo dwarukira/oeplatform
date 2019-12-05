@@ -1,5 +1,7 @@
 package models
 
+import "github.com/jinzhu/gorm"
+
 // Product reps the oe product
 type Product struct {
 	BaseModelSoftDelete // We don't to actually delete the sellers, maybe audit
@@ -16,6 +18,15 @@ type Product struct {
 	Variants            []ProductVariant
 	Category            Category
 	CategoryID          string
+}
+
+func SellerScope(seller *string) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		if seller != nil {
+			return db.Where("seller_id = ?", seller)
+		}
+		return db
+	}
 }
 
 // TableName returns the database table name for the ProductVariant model.

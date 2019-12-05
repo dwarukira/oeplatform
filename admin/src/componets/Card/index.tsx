@@ -31,10 +31,10 @@ const RenderCard: FunctionComponent<IProps> = ({ style, children }) => {
     <Card
       bordered={true}
       style={{
-        width: 340,
+        // width: 340,
         backgroundColor: style,
         borderRadius: 4,
-        height: 185
+        // height: 185
       }}
     >
       {children}
