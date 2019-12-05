@@ -170,6 +170,7 @@ func (o *ORM) GetUser(id string) (*User, error) {
 	db.Preloads("Logins")
 	db.Preloads("Roles")
 	db.Preloads("Roles.Permissions")
+	db.Preloads("Address")
 	if err := db.First(up, id).Error; err != nil {
 		return nil, err
 	}

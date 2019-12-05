@@ -136,3 +136,18 @@ export const GET_PRODUCTS = gql`
     }
   }
 `;
+
+export const GET_CATEGORIES = gql`
+  query Categories {
+    categories {
+      count
+      list {
+        name
+        id
+        description
+        createdAt
+
+      }
+    }
+  }
+`;

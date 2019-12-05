@@ -80,17 +80,22 @@ type ComplexityRoot struct {
 	}
 
 	Category struct {
-		CreateAt    func(childComplexity int) int
-		Description func(childComplexity int) int
-		ID          func(childComplexity int) int
-		Name        func(childComplexity int) int
-		UpdatedAt   func(childComplexity int) int
+		BackgroundImage    func(childComplexity int) int
+		BackgroundImageAlt func(childComplexity int) int
+		CreatedAt          func(childComplexity int) int
+		Description        func(childComplexity int) int
+		ID                 func(childComplexity int) int
+		Name               func(childComplexity int) int
+		Parent             func(childComplexity int) int
+		Sub                func(childComplexity int) int
+		UpdatedAt          func(childComplexity int) int
 	}
 
-	File struct {
-		Content func(childComplexity int) int
-		ID      func(childComplexity int) int
-		Name    func(childComplexity int) int
+	Image struct {
+		CreatedAt func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Name      func(childComplexity int) int
+		Source    func(childComplexity int) int
 	}
 
 	Mutation struct {
@@ -144,6 +149,7 @@ type ComplexityRoot struct {
 		CreatedAt         func(childComplexity int) int
 		Grams             func(childComplexity int) int
 		ID                func(childComplexity int) int
+		Images            func(childComplexity int) int
 		InventoryQuantity func(childComplexity int) int
 		Name              func(childComplexity int) int
 		Price             func(childComplexity int) int
@@ -255,9 +261,9 @@ type MutationResolver interface {
 	CreateCategory(ctx context.Context, input models.CategoryInput) (*models.Category, error)
 	CreateProduct(ctx context.Context, input models.ProductCreateInput) (*models.Product, error)
 	CreateProductVariant(ctx context.Context, input models.CreateProductVariantInput) (*models.ProductVariant, error)
-	AddProductPhoto(ctx context.Context, files []*graphql.Upload, productVariantID string) ([]*models.File, error)
-	SingleUpload(ctx context.Context, file graphql.Upload) (*models.File, error)
-	MultipleUploadWithPayload(ctx context.Context, req []*models.UploadFile) ([]*models.File, error)
+	AddProductPhoto(ctx context.Context, files []*graphql.Upload, productVariantID string) ([]*models.Image, error)
+	SingleUpload(ctx context.Context, file graphql.Upload) (*models.Image, error)
+	MultipleUploadWithPayload(ctx context.Context, req []*models.UploadFile) ([]*models.Image, error)
 	CreateSeller(ctx context.Context, input models.SellerInput) (*models.Seller, error)
 }
 type QueryResolver interface {
@@ -403,12 +409,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Categories.List(childComplexity), true
 
-	case "Category.createAt":
-		if e.complexity.Category.CreateAt == nil {
+	case "Category.backgroundImage":
+		if e.complexity.Category.BackgroundImage == nil {
 			break
 		}
 
-		return e.complexity.Category.CreateAt(childComplexity), true
+		return e.complexity.Category.BackgroundImage(childComplexity), true
+
+	case "Category.backgroundImageAlt":
+		if e.complexity.Category.BackgroundImageAlt == nil {
+			break
+		}
+
+		return e.complexity.Category.BackgroundImageAlt(childComplexity), true
+
+	case "Category.createdAt":
+		if e.complexity.Category.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Category.CreatedAt(childComplexity), true
 
 	case "Category.description":
 		if e.complexity.Category.Description == nil {
@@ -431,6 +451,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Category.Name(childComplexity), true
 
+	case "Category.parent":
+		if e.complexity.Category.Parent == nil {
+			break
+		}
+
+		return e.complexity.Category.Parent(childComplexity), true
+
+	case "Category.sub":
+		if e.complexity.Category.Sub == nil {
+			break
+		}
+
+		return e.complexity.Category.Sub(childComplexity), true
+
 	case "Category.updatedAt":
 		if e.complexity.Category.UpdatedAt == nil {
 			break
@@ -438,26 +472,33 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Category.UpdatedAt(childComplexity), true
 
-	case "File.content":
-		if e.complexity.File.Content == nil {
+	case "Image.createdAt":
+		if e.complexity.Image.CreatedAt == nil {
 			break
 		}
 
-		return e.complexity.File.Content(childComplexity), true
+		return e.complexity.Image.CreatedAt(childComplexity), true
 
-	case "File.id":
-		if e.complexity.File.ID == nil {
+	case "Image.id":
+		if e.complexity.Image.ID == nil {
 			break
 		}
 
-		return e.complexity.File.ID(childComplexity), true
+		return e.complexity.Image.ID(childComplexity), true
 
-	case "File.name":
-		if e.complexity.File.Name == nil {
+	case "Image.name":
+		if e.complexity.Image.Name == nil {
 			break
 		}
 
-		return e.complexity.File.Name(childComplexity), true
+		return e.complexity.Image.Name(childComplexity), true
+
+	case "Image.source":
+		if e.complexity.Image.Source == nil {
+			break
+		}
+
+		return e.complexity.Image.Source(childComplexity), true
 
 	case "Mutation.addProductPhoto":
 		if e.complexity.Mutation.AddProductPhoto == nil {
@@ -805,6 +846,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.ProductVariant.ID(childComplexity), true
+
+	case "ProductVariant.images":
+		if e.complexity.ProductVariant.Images == nil {
+			break
+		}
+
+		return e.complexity.ProductVariant.Images(childComplexity), true
 
 	case "ProductVariant.inventoryQuantity":
 		if e.complexity.ProductVariant.InventoryQuantity == nil {
@@ -1405,14 +1453,21 @@ var parsedSchema = gqlparser.MustLoadSchema(
 	&ast.Source{Name: "internal/gql/schemas/category.graphql", Input: `type Category {
   id: ID!
   name: String
-  createAt: Time!
+  parent: Category
+  backgroundImage: String
+  backgroundImageAlt: String
+  createdAt: Time!
   updatedAt: Time!
   description: String
+  sub: [Category]
 }
 
 input CategoryInput {
   name: String!
   description: String
+  parent: ID
+  backgroundImage: String
+  backgroundImageAlt: String
 }
 
 type Categories {
@@ -1479,17 +1534,19 @@ type ProductVariant {
   trackInventory: Boolean
   quantityAllocated: Int
   product: Product
+  images: [Image]
 }
 
 
 "The ` + "`" + `Upload` + "`" + ` scalar type represents a multipart file upload."
 scalar Upload
 
-"The ` + "`" + `File` + "`" + ` type, represents the response of uploading a file."
-type File {
-    id: Int!
+"The ` + "`" + `Image` + "`" + ` type, represents the response of uploading a file."
+type Image {
+    id: ID!
     name: String!
-    content: String!
+    source: String!
+    createdAt: Time!
 }
 
 "The ` + "`" + `UploadFile` + "`" + ` type, represents the request for uploading a file with certain payload."
@@ -1620,9 +1677,9 @@ type Products {
 extend type Mutation {
   createProduct(input: ProductCreateInput!): Product
   createProductVariant(input: CreateProductVariantInput!): ProductVariant
-  addProductPhoto(files: [Upload!], productVariantID: ID!): [File!] 
-  singleUpload(file: Upload!): File!
-  multipleUploadWithPayload(req: [UploadFile!]!): [File!]!
+  addProductPhoto(files: [Upload!], productVariantID: ID!): [Image!] 
+  singleUpload(file: Upload!): Image!
+  multipleUploadWithPayload(req: [UploadFile!]!): [Image!]!
 
 }
 
@@ -2805,7 +2862,7 @@ func (ec *executionContext) _Category_name(ctx context.Context, field graphql.Co
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Category_createAt(ctx context.Context, field graphql.CollectedField, obj *models.Category) (ret graphql.Marshaler) {
+func (ec *executionContext) _Category_parent(ctx context.Context, field graphql.CollectedField, obj *models.Category) (ret graphql.Marshaler) {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() {
 		if r := recover(); r != nil {
@@ -2824,7 +2881,100 @@ func (ec *executionContext) _Category_createAt(ctx context.Context, field graphq
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.CreateAt, nil
+		return obj.Parent, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.Category)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOCategory2ᚖoeᚋinternalᚋgqlᚋmodelsᚐCategory(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Category_backgroundImage(ctx context.Context, field graphql.CollectedField, obj *models.Category) (ret graphql.Marshaler) {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+		ec.Tracer.EndFieldExecution(ctx)
+	}()
+	rctx := &graphql.ResolverContext{
+		Object:   "Category",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BackgroundImage, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Category_backgroundImageAlt(ctx context.Context, field graphql.CollectedField, obj *models.Category) (ret graphql.Marshaler) {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+		ec.Tracer.EndFieldExecution(ctx)
+	}()
+	rctx := &graphql.ResolverContext{
+		Object:   "Category",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BackgroundImageAlt, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Category_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.Category) (ret graphql.Marshaler) {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+		ec.Tracer.EndFieldExecution(ctx)
+	}()
+	rctx := &graphql.ResolverContext{
+		Object:   "Category",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
 	})
 
 	if resTmp == nil {
@@ -2904,7 +3054,7 @@ func (ec *executionContext) _Category_description(ctx context.Context, field gra
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _File_id(ctx context.Context, field graphql.CollectedField, obj *models.File) (ret graphql.Marshaler) {
+func (ec *executionContext) _Category_sub(ctx context.Context, field graphql.CollectedField, obj *models.Category) (ret graphql.Marshaler) {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() {
 		if r := recover(); r != nil {
@@ -2914,7 +3064,38 @@ func (ec *executionContext) _File_id(ctx context.Context, field graphql.Collecte
 		ec.Tracer.EndFieldExecution(ctx)
 	}()
 	rctx := &graphql.ResolverContext{
-		Object:   "File",
+		Object:   "Category",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Sub, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Category)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOCategory2ᚕᚖoeᚋinternalᚋgqlᚋmodelsᚐCategory(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Image_id(ctx context.Context, field graphql.CollectedField, obj *models.Image) (ret graphql.Marshaler) {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+		ec.Tracer.EndFieldExecution(ctx)
+	}()
+	rctx := &graphql.ResolverContext{
+		Object:   "Image",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -2932,13 +3113,13 @@ func (ec *executionContext) _File_id(ctx context.Context, field graphql.Collecte
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(string)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNInt2int(ctx, field.Selections, res)
+	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _File_name(ctx context.Context, field graphql.CollectedField, obj *models.File) (ret graphql.Marshaler) {
+func (ec *executionContext) _Image_name(ctx context.Context, field graphql.CollectedField, obj *models.Image) (ret graphql.Marshaler) {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() {
 		if r := recover(); r != nil {
@@ -2948,7 +3129,7 @@ func (ec *executionContext) _File_name(ctx context.Context, field graphql.Collec
 		ec.Tracer.EndFieldExecution(ctx)
 	}()
 	rctx := &graphql.ResolverContext{
-		Object:   "File",
+		Object:   "Image",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -2972,7 +3153,7 @@ func (ec *executionContext) _File_name(ctx context.Context, field graphql.Collec
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _File_content(ctx context.Context, field graphql.CollectedField, obj *models.File) (ret graphql.Marshaler) {
+func (ec *executionContext) _Image_source(ctx context.Context, field graphql.CollectedField, obj *models.Image) (ret graphql.Marshaler) {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() {
 		if r := recover(); r != nil {
@@ -2982,7 +3163,7 @@ func (ec *executionContext) _File_content(ctx context.Context, field graphql.Col
 		ec.Tracer.EndFieldExecution(ctx)
 	}()
 	rctx := &graphql.ResolverContext{
-		Object:   "File",
+		Object:   "Image",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -2991,7 +3172,7 @@ func (ec *executionContext) _File_content(ctx context.Context, field graphql.Col
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Content, nil
+		return obj.Source, nil
 	})
 
 	if resTmp == nil {
@@ -3004,6 +3185,40 @@ func (ec *executionContext) _File_content(ctx context.Context, field graphql.Col
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Image_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.Image) (ret graphql.Marshaler) {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+		ec.Tracer.EndFieldExecution(ctx)
+	}()
+	rctx := &graphql.ResolverContext{
+		Object:   "Image",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3360,10 +3575,10 @@ func (ec *executionContext) _Mutation_addProductPhoto(ctx context.Context, field
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*models.File)
+	res := resTmp.([]*models.Image)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOFile2ᚕᚖoeᚋinternalᚋgqlᚋmodelsᚐFile(ctx, field.Selections, res)
+	return ec.marshalOImage2ᚕᚖoeᚋinternalᚋgqlᚋmodelsᚐImage(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_singleUpload(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3401,10 +3616,10 @@ func (ec *executionContext) _Mutation_singleUpload(ctx context.Context, field gr
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*models.File)
+	res := resTmp.(*models.Image)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNFile2ᚖoeᚋinternalᚋgqlᚋmodelsᚐFile(ctx, field.Selections, res)
+	return ec.marshalNImage2ᚖoeᚋinternalᚋgqlᚋmodelsᚐImage(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_multipleUploadWithPayload(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3442,10 +3657,10 @@ func (ec *executionContext) _Mutation_multipleUploadWithPayload(ctx context.Cont
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*models.File)
+	res := resTmp.([]*models.Image)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNFile2ᚕᚖoeᚋinternalᚋgqlᚋmodelsᚐFile(ctx, field.Selections, res)
+	return ec.marshalNImage2ᚕᚖoeᚋinternalᚋgqlᚋmodelsᚐImage(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createSeller(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -4836,6 +5051,37 @@ func (ec *executionContext) _ProductVariant_product(ctx context.Context, field g
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalOProduct2ᚖoeᚋinternalᚋgqlᚋmodelsᚐProduct(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductVariant_images(ctx context.Context, field graphql.CollectedField, obj *models.ProductVariant) (ret graphql.Marshaler) {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+		ec.Tracer.EndFieldExecution(ctx)
+	}()
+	rctx := &graphql.ResolverContext{
+		Object:   "ProductVariant",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Images, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Image)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOImage2ᚕᚖoeᚋinternalᚋgqlᚋmodelsᚐImage(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Products_count(ctx context.Context, field graphql.CollectedField, obj *models.Products) (ret graphql.Marshaler) {
@@ -7987,6 +8233,24 @@ func (ec *executionContext) unmarshalInputCategoryInput(ctx context.Context, obj
 			if err != nil {
 				return it, err
 			}
+		case "parent":
+			var err error
+			it.Parent, err = ec.unmarshalOID2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "backgroundImage":
+			var err error
+			it.BackgroundImage, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "backgroundImageAlt":
+			var err error
+			it.BackgroundImageAlt, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -8579,8 +8843,14 @@ func (ec *executionContext) _Category(ctx context.Context, sel ast.SelectionSet,
 			}
 		case "name":
 			out.Values[i] = ec._Category_name(ctx, field, obj)
-		case "createAt":
-			out.Values[i] = ec._Category_createAt(ctx, field, obj)
+		case "parent":
+			out.Values[i] = ec._Category_parent(ctx, field, obj)
+		case "backgroundImage":
+			out.Values[i] = ec._Category_backgroundImage(ctx, field, obj)
+		case "backgroundImageAlt":
+			out.Values[i] = ec._Category_backgroundImageAlt(ctx, field, obj)
+		case "createdAt":
+			out.Values[i] = ec._Category_createdAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -8591,6 +8861,8 @@ func (ec *executionContext) _Category(ctx context.Context, sel ast.SelectionSet,
 			}
 		case "description":
 			out.Values[i] = ec._Category_description(ctx, field, obj)
+		case "sub":
+			out.Values[i] = ec._Category_sub(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -8602,29 +8874,34 @@ func (ec *executionContext) _Category(ctx context.Context, sel ast.SelectionSet,
 	return out
 }
 
-var fileImplementors = []string{"File"}
+var imageImplementors = []string{"Image"}
 
-func (ec *executionContext) _File(ctx context.Context, sel ast.SelectionSet, obj *models.File) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.RequestContext, sel, fileImplementors)
+func (ec *executionContext) _Image(ctx context.Context, sel ast.SelectionSet, obj *models.Image) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.RequestContext, sel, imageImplementors)
 
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("File")
+			out.Values[i] = graphql.MarshalString("Image")
 		case "id":
-			out.Values[i] = ec._File_id(ctx, field, obj)
+			out.Values[i] = ec._Image_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "name":
-			out.Values[i] = ec._File_name(ctx, field, obj)
+			out.Values[i] = ec._Image_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "content":
-			out.Values[i] = ec._File_content(ctx, field, obj)
+		case "source":
+			out.Values[i] = ec._Image_source(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createdAt":
+			out.Values[i] = ec._Image_createdAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -8907,6 +9184,8 @@ func (ec *executionContext) _ProductVariant(ctx context.Context, sel ast.Selecti
 			out.Values[i] = ec._ProductVariant_quantityAllocated(ctx, field, obj)
 		case "product":
 			out.Values[i] = ec._ProductVariant_product(ctx, field, obj)
+		case "images":
+			out.Values[i] = ec._ProductVariant_images(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -9725,11 +10004,25 @@ func (ec *executionContext) unmarshalNCreateProductVariantInput2oeᚋinternalᚋ
 	return ec.unmarshalInputCreateProductVariantInput(ctx, v)
 }
 
-func (ec *executionContext) marshalNFile2oeᚋinternalᚋgqlᚋmodelsᚐFile(ctx context.Context, sel ast.SelectionSet, v models.File) graphql.Marshaler {
-	return ec._File(ctx, sel, &v)
+func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
+	return graphql.UnmarshalID(v)
 }
 
-func (ec *executionContext) marshalNFile2ᚕᚖoeᚋinternalᚋgqlᚋmodelsᚐFile(ctx context.Context, sel ast.SelectionSet, v []*models.File) graphql.Marshaler {
+func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+	res := graphql.MarshalID(v)
+	if res == graphql.Null {
+		if !ec.HasError(graphql.GetResolverContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) marshalNImage2oeᚋinternalᚋgqlᚋmodelsᚐImage(ctx context.Context, sel ast.SelectionSet, v models.Image) graphql.Marshaler {
+	return ec._Image(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNImage2ᚕᚖoeᚋinternalᚋgqlᚋmodelsᚐImage(ctx context.Context, sel ast.SelectionSet, v []*models.Image) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -9753,7 +10046,7 @@ func (ec *executionContext) marshalNFile2ᚕᚖoeᚋinternalᚋgqlᚋmodelsᚐFi
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNFile2ᚖoeᚋinternalᚋgqlᚋmodelsᚐFile(ctx, sel, v[i])
+			ret[i] = ec.marshalNImage2ᚖoeᚋinternalᚋgqlᚋmodelsᚐImage(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -9766,42 +10059,14 @@ func (ec *executionContext) marshalNFile2ᚕᚖoeᚋinternalᚋgqlᚋmodelsᚐFi
 	return ret
 }
 
-func (ec *executionContext) marshalNFile2ᚖoeᚋinternalᚋgqlᚋmodelsᚐFile(ctx context.Context, sel ast.SelectionSet, v *models.File) graphql.Marshaler {
+func (ec *executionContext) marshalNImage2ᚖoeᚋinternalᚋgqlᚋmodelsᚐImage(ctx context.Context, sel ast.SelectionSet, v *models.Image) graphql.Marshaler {
 	if v == nil {
 		if !ec.HasError(graphql.GetResolverContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
 		}
 		return graphql.Null
 	}
-	return ec._File(ctx, sel, v)
-}
-
-func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
-	return graphql.UnmarshalID(v)
-}
-
-func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
-	res := graphql.MarshalID(v)
-	if res == graphql.Null {
-		if !ec.HasError(graphql.GetResolverContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-	}
-	return res
-}
-
-func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
-	return graphql.UnmarshalInt(v)
-}
-
-func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
-	res := graphql.MarshalInt(v)
-	if res == graphql.Null {
-		if !ec.HasError(graphql.GetResolverContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-	}
-	return res
+	return ec._Image(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNProduct2oeᚋinternalᚋgqlᚋmodelsᚐProduct(ctx context.Context, sel ast.SelectionSet, v models.Product) graphql.Marshaler {
@@ -10499,7 +10764,11 @@ func (ec *executionContext) marshalOCategories2ᚖoeᚋinternalᚋgqlᚋmodels�
 	return ec._Categories(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOFile2ᚕᚖoeᚋinternalᚋgqlᚋmodelsᚐFile(ctx context.Context, sel ast.SelectionSet, v []*models.File) graphql.Marshaler {
+func (ec *executionContext) marshalOCategory2oeᚋinternalᚋgqlᚋmodelsᚐCategory(ctx context.Context, sel ast.SelectionSet, v models.Category) graphql.Marshaler {
+	return ec._Category(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOCategory2ᚕᚖoeᚋinternalᚋgqlᚋmodelsᚐCategory(ctx context.Context, sel ast.SelectionSet, v []*models.Category) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -10526,7 +10795,7 @@ func (ec *executionContext) marshalOFile2ᚕᚖoeᚋinternalᚋgqlᚋmodelsᚐFi
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNFile2ᚖoeᚋinternalᚋgqlᚋmodelsᚐFile(ctx, sel, v[i])
+			ret[i] = ec.marshalOCategory2ᚖoeᚋinternalᚋgqlᚋmodelsᚐCategory(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -10537,6 +10806,13 @@ func (ec *executionContext) marshalOFile2ᚕᚖoeᚋinternalᚋgqlᚋmodelsᚐFi
 	}
 	wg.Wait()
 	return ret
+}
+
+func (ec *executionContext) marshalOCategory2ᚖoeᚋinternalᚋgqlᚋmodelsᚐCategory(ctx context.Context, sel ast.SelectionSet, v *models.Category) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Category(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOFloat2float64(ctx context.Context, v interface{}) (float64, error) {
@@ -10583,6 +10859,57 @@ func (ec *executionContext) marshalOID2ᚖstring(ctx context.Context, sel ast.Se
 		return graphql.Null
 	}
 	return ec.marshalOID2string(ctx, sel, *v)
+}
+
+func (ec *executionContext) marshalOImage2oeᚋinternalᚋgqlᚋmodelsᚐImage(ctx context.Context, sel ast.SelectionSet, v models.Image) graphql.Marshaler {
+	return ec._Image(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOImage2ᚕᚖoeᚋinternalᚋgqlᚋmodelsᚐImage(ctx context.Context, sel ast.SelectionSet, v []*models.Image) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		rctx := &graphql.ResolverContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithResolverContext(ctx, rctx)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNImage2ᚖoeᚋinternalᚋgqlᚋmodelsᚐImage(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalOImage2ᚖoeᚋinternalᚋgqlᚋmodelsᚐImage(ctx context.Context, sel ast.SelectionSet, v *models.Image) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Image(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOInt2int(ctx context.Context, v interface{}) (int, error) {
@@ -10777,7 +11104,7 @@ func (ec *executionContext) unmarshalOProductVariantInput2ᚕᚖoeᚋinternalᚋ
 	var err error
 	res := make([]*models.ProductVariantInput, len(vSlice))
 	for i := range vSlice {
-		res[i], err = ec.unmarshalNProductVariantInput2ᚖoeᚋinternalᚋgqlᚋmodelsᚐProductVariantInput(ctx, vSlice[i])
+		res[i], err = ec.unmarshalOProductVariantInput2ᚖoeᚋinternalᚋgqlᚋmodelsᚐProductVariantInput(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}

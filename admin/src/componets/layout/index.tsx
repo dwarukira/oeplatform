@@ -22,10 +22,7 @@ const Sub = styled.div`
   margin-top: 20px;
 `;
 
-
-interface IProps extends RouteComponentProps {
-
-}
+interface IProps extends RouteComponentProps {}
 
 class DashboardLayout extends React.Component<IProps> {
   state = {
@@ -41,126 +38,144 @@ class DashboardLayout extends React.Component<IProps> {
   render() {
     return (
       <Location>
-      {({location}) => {
+        {({ location }) => {
+          return (
+            <Layout style={{ minHeight: "100vh" }}>
+              <Sider
+                trigger={null}
+                collapsible
+                collapsed={this.state.collapsed}
+              >
+                <div className="logo">
+                  <Logo />
+                </div>
 
-        return (
-      <Layout style={{ minHeight: "100vh" }}>
-        <Sider trigger={null} collapsible collapsed={this.state.collapsed}>
-          <div className="logo">
-            <Logo />
-            </div>
+                <Menu
+                  theme="dark"
+                  mode="vertical"
+                  defaultSelectedKeys={[location.pathname]}
+                >
+                  <Sub> Analytics </Sub>
+                  <Menu.Item key="1">
+                    <Icon type="appstore" />
+                    <span>Dashboard</span>
+                  </Menu.Item>
+                  <Menu.Item key="2">
+                    <Icon type="rise" />
+                    <span>Reports</span>
+                  </Menu.Item>
 
-          <Menu 
-            theme="dark" 
-            mode="vertical" 
-            defaultSelectedKeys={[location.pathname]}
-          >
-            <Sub> Analytics </Sub>
-            <Menu.Item key="1">
-              <Icon type="appstore" />
-              <span>Dashboard</span>
-            </Menu.Item>
-            <Menu.Item key="2">
-              <Icon type="rise" />
-              <span>Reports</span>
-            </Menu.Item>
+                  <Sub> Platform </Sub>
+                  <Menu.Item key="3">
+                    <Icon type="profile" />
+                    <span>Content</span>
+                  </Menu.Item>
 
-            <Sub> Platform </Sub>
-            <Menu.Item key="3">
-              <Icon type="profile" />
-              <span>Content</span>
-            </Menu.Item>
-            <Menu.Item key={routes.inventory}>
-            <Link to={routes.inventory}>
-              <Icon type="video-camera" />
-              <span>Inventory</span>
-              </Link>
-            </Menu.Item>
-            <Menu.Item key="5">
-              
-              <Icon type="shopping-cart" />
-              <span>Orders</span>
-            </Menu.Item>
+                  <Menu.Item key={routes.category}>
+                    <Link to={routes.category}>
+                      <Icon type="shopping" />
+                      <span>Categories</span>
+                    </Link>
+                  </Menu.Item>
 
-      
-            <SubMenu
-              key="6"
-              title={
-                <span>
-                  <Icon type="file-search" />
-                  <span>Directory</span>
-                </span>
-              }
-            >
-              <Menu.Item key="/directory/customers"> <Link to="/directory/customers"> Customers </Link> </Menu.Item>
-             <Menu.Item key="/directory/sellers"> <Link to={routes.directory_sellers} > Sellers </Link></Menu.Item> 
-            
-              
-            </SubMenu>
+                  <Menu.Item key={routes.inventory}>
+                    <Link to={routes.inventory}>
+                      <Icon type="video-camera" />
+                      <span>Inventory</span>
+                    </Link>
+                  </Menu.Item>
+                  <Menu.Item key="5">
+                    <Icon type="shopping-cart" />
+                    <span>Orders</span>
+                  </Menu.Item>
 
-            <Sub> Finance </Sub>
+                  <SubMenu
+                    key="6"
+                    title={
+                      <span>
+                        <Icon type="file-search" />
+                        <span>Directory</span>
+                      </span>
+                    }
+                  >
+                    <Menu.Item key="/directory/customers">
+                      {" "}
+                      <Link to="/directory/customers"> Customers </Link>{" "}
+                    </Menu.Item>
+                    <Menu.Item key="/directory/sellers">
+                      {" "}
+                      <Link to={routes.directory_sellers}> Sellers </Link>
+                    </Menu.Item>
+                  </SubMenu>
 
-            <Menu.Item key="8">
-              <Icon type="money-collect" />
-              <span>Payments</span>
-            </Menu.Item>
+                  <Sub> Finance </Sub>
 
-            <Menu.Item key="9">
-              <Icon type="wallet" />
-              <span>Wallet</span>
-            </Menu.Item>
+                  <Menu.Item key="8">
+                    <Icon type="money-collect" />
+                    <span>Payments</span>
+                  </Menu.Item>
 
-            <Sub> Account </Sub>
+                  <Menu.Item key="9">
+                    <Icon type="wallet" />
+                    <span>Wallet</span>
+                  </Menu.Item>
 
-            <Menu.Item key="10">
-              <Icon type="notification" />
-              <span>Notifications</span>
-            </Menu.Item>
+                  <Sub> Account </Sub>
 
-            <SubMenu
-              key="11"
-              title={
-                <span>
-                  <Icon type="usergroup-add" />
-                  <span>Users</span>
-                </span>
-              }
-            >
-             <Menu.Item key="/users/list"> <Link to="/users/list" >Add/Edit </Link></Menu.Item> 
-              <Menu.Item key="/users/roles"> <Link to="/users/roles"> Roles </Link> </Menu.Item>
-              <Menu.Item key="user_ac">My Account</Menu.Item>
-            </SubMenu>
+                  <Menu.Item key="10">
+                    <Icon type="notification" />
+                    <span>Notifications</span>
+                  </Menu.Item>
 
-            <Menu.Item key="12">
-              <Icon type="setting" />
-              <span>Settings</span>
-            </Menu.Item>
-          </Menu>
-        </Sider>
-        <Layout>
-          <Header style={{ background: "#fff", padding: 0 }}>
-            <Icon
-              className="trigger"
-              type={this.state.collapsed ? "menu-unfold" : "menu-fold"}
-              onClick={this.toggle}
-            />
-          </Header>
-          <Content
-            style={{
-              margin: "24px 16px",
-              padding: 24,
-              background: "#fff",
-              minHeight: 280
-            }}
-          >
-            { this.props.children }
-          </Content>
-        </Layout>
-      </Layout>
-        )
-      }}
-          </Location>
+                  <SubMenu
+                    key="11"
+                    title={
+                      <span>
+                        <Icon type="usergroup-add" />
+                        <span>Users</span>
+                      </span>
+                    }
+                  >
+                    <Menu.Item key="/users/list">
+                      {" "}
+                      <Link to="/users/list">Add/Edit </Link>
+                    </Menu.Item>
+                    <Menu.Item key="/users/roles">
+                      {" "}
+                      <Link to="/users/roles"> Roles </Link>{" "}
+                    </Menu.Item>
+                    <Menu.Item key="user_ac">My Account</Menu.Item>
+                  </SubMenu>
 
+                  <Menu.Item key="12">
+                    <Icon type="setting" />
+                    <span>Settings</span>
+                  </Menu.Item>
+                </Menu>
+              </Sider>
+              <Layout>
+                <Header style={{ background: "#fff", padding: 0 }}>
+                  <Icon
+                    className="trigger"
+                    type={this.state.collapsed ? "menu-unfold" : "menu-fold"}
+                    onClick={this.toggle}
+                  />
+                </Header>
+                <Content
+                  style={{
+                    margin: "24px 16px",
+                    padding: 24,
+                    background: "#fff",
+                    minHeight: 280
+                  }}
+                >
+                  {this.props.children}
+                </Content>
+              </Layout>
+            </Layout>
+          );
+        }}
+      </Location>
     );
   }
 }

@@ -24,6 +24,7 @@ func categoriesList(r *queryResolver, id *string) (*models.Categories, error) {
 
 	db := r.ORM.DB.New()
 
+	db = db.Set("gorm:auto_preload", true)
 	if id != nil {
 		db = db.Where(whereID, *id)
 	}
@@ -44,11 +45,19 @@ func categoriesList(r *queryResolver, id *string) (*models.Categories, error) {
 func categoryCreateUpdate(r *mutationResolver, input models.CategoryInput, update bool) (*models.Category, error) {
 
 	db := r.ORM.DB.New().Begin()
+	parent, err := r.ORM.GetCategoryParent(*input.Parent)
+
+	if err != nil {
+		// TODO do something about the error
+	}
 
 	dbo, err := tf.GQLInputCategoryToDBCategory(&input)
+
 	if err != nil {
 		return nil, err
 	}
+
+	dbo.Parent = parent
 	db = db.Create(dbo).First(dbo)
 
 	db = db.Commit()

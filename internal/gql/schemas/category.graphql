@@ -1,14 +1,21 @@
 type Category {
   id: ID!
   name: String
-  createAt: Time!
+  parent: Category
+  backgroundImage: String
+  backgroundImageAlt: String
+  createdAt: Time!
   updatedAt: Time!
   description: String
+  sub: [Category]
 }
 
 input CategoryInput {
   name: String!
   description: String
+  parent: ID
+  backgroundImage: String
+  backgroundImageAlt: String
 }
 
 type Categories {

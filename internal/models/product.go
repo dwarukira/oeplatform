@@ -14,6 +14,8 @@ type Product struct {
 	PublishedScope      string
 	Active              bool
 	Variants            []ProductVariant
+	Category            Category
+	CategoryID          string
 }
 
 // TableName returns the database table name for the ProductVariant model.

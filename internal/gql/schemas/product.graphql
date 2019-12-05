@@ -48,17 +48,19 @@ type ProductVariant {
   trackInventory: Boolean
   quantityAllocated: Int
   product: Product
+  images: [Image]
 }
 
 
 "The `Upload` scalar type represents a multipart file upload."
 scalar Upload
 
-"The `File` type, represents the response of uploading a file."
-type File {
-    id: Int!
+"The `Image` type, represents the response of uploading a file."
+type Image {
+    id: ID!
     name: String!
-    content: String!
+    source: String!
+    createdAt: Time!
 }
 
 "The `UploadFile` type, represents the request for uploading a file with certain payload."
@@ -189,9 +191,9 @@ type Products {
 extend type Mutation {
   createProduct(input: ProductCreateInput!): Product
   createProductVariant(input: CreateProductVariantInput!): ProductVariant
-  addProductPhoto(files: [Upload!], productVariantID: ID!): [File!] 
-  singleUpload(file: Upload!): File!
-  multipleUploadWithPayload(req: [UploadFile!]!): [File!]!
+  addProductPhoto(files: [Upload!], productVariantID: ID!): [Image!] 
+  singleUpload(file: Upload!): Image!
+  multipleUploadWithPayload(req: [UploadFile!]!): [Image!]!
 
 }
 

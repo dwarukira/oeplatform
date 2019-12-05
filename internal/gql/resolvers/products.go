@@ -33,7 +33,7 @@ func (r *mutationResolver) CreateProductVariant(ctx context.Context, input model
 	return nil, nil
 }
 
-func (r *mutationResolver) SingleUpload(ctx context.Context, file graphql.Upload) (*models.File, error) {
+func (r *mutationResolver) SingleUpload(ctx context.Context, file graphql.Upload) (*models.Image, error) {
 	_, err := ioutil.ReadAll(file.File)
 
 	if err != nil {
@@ -45,17 +45,16 @@ func (r *mutationResolver) SingleUpload(ctx context.Context, file graphql.Upload
 	return nil, err
 }
 
-func (r *mutationResolver) AddProductPhoto(ctx context.Context, files []*graphql.Upload, productVariantID string) ([]*models.File, error) {
-	productVariant, err := r.ORM.GetProductVariant(productVariantID)
-	fmt.Println(productVariant, "----------->")
+func (r *mutationResolver) AddProductPhoto(ctx context.Context, files []*graphql.Upload, productVariantID string) ([]*models.Image, error) {
+	productVariant, _ := r.ORM.GetProductVariant(productVariantID)
+
 	db := r.ORM.DB.New().Begin()
 	var images []*dbm.Image
 
-	fmt.Println("HAHHA", productVariant, "---->", err, "we need sime thing")
 	for i := range files {
 		content, err := ioutil.ReadAll(files[i].File)
 		if err != nil {
-			return []*models.File{}, err
+			return []*models.Image{}, err
 		}
 		_, url, _ := bucket.UploadFile(content)
 		images = append(images, &dbm.Image{
@@ -66,10 +65,21 @@ func (r *mutationResolver) AddProductPhoto(ctx context.Context, files []*graphql
 	}
 
 	db.Model(&productVariant).Association("Images").Append(images)
-	return []*models.File{}, nil
+	db.Commit()
+	imagesresponse := []*models.Image{}
+
+	for _, rec := range images {
+
+		if rec, err := tf.DBImageToGQLImage(rec); err != nil {
+
+		} else {
+			imagesresponse = append(imagesresponse, rec)
+		}
+	}
+	return imagesresponse, nil
 }
 
-func (r *mutationResolver) MultipleUploadWithPayload(ctx context.Context, req []*models.UploadFile) ([]*models.File, error) {
+func (r *mutationResolver) MultipleUploadWithPayload(ctx context.Context, req []*models.UploadFile) ([]*models.Image, error) {
 	if len(req) == 0 {
 		return nil, errors.New("empty list")
 	}
@@ -81,7 +91,7 @@ func (r *mutationResolver) MultipleUploadWithPayload(ctx context.Context, req []
 	for i := range req {
 		content, err := ioutil.ReadAll(req[i].File.File)
 		if err != nil {
-			return []*models.File{}, err
+			return []*models.Image{}, err
 		}
 		_, url, _ := bucket.UploadFile(content)
 		images = append(images, &dbm.Image{
@@ -92,7 +102,18 @@ func (r *mutationResolver) MultipleUploadWithPayload(ctx context.Context, req []
 	}
 	db.Model(&productVariant).Association("Images").Append(images)
 	db.Commit()
-	return nil, nil
+
+	imagesresponse := []*models.Image{}
+
+	for _, rec := range images {
+
+		if rec, err := tf.DBImageToGQLImage(rec); err != nil {
+
+		} else {
+			imagesresponse = append(imagesresponse, rec)
+		}
+	}
+	return imagesresponse, nil
 }
 
 func (r *queryResolver) Products(ctx context.Context, id *string) (*models.Products, error) {
@@ -126,7 +147,7 @@ func sellerProductList(r *queryResolver, seller *dbm.Seller, id *string) (*model
 	db = db.Preload("Seller.User")
 	db = db.Preload("Seller.Bank")
 	db = db.Preload("Variants")
-
+	db = db.Preload("Variants.Images")
 	if id != nil {
 		db = db.Where(whereID, *id)
 	}
@@ -158,6 +179,7 @@ func productsList(r *queryResolver, id *string) (*models.Products, error) {
 	db = db.Preload("Seller.User")
 	db = db.Preload("Seller.Bank")
 	db = db.Preload("Variants")
+	db = db.Preload("Variants.Images")
 
 	if id != nil {
 		db = db.Where(whereID, *id)

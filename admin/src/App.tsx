@@ -16,6 +16,7 @@ import RoleCreate from "./pages/Users/roles_new";
 import routes from "./routes";
 import NotFound from "./componets/NotFound";
 import Inventory from "./pages/Inventory/inventory";
+import Category from "./pages/Category";
 
 const Container = styled.div`
   height: 100vh;
@@ -36,6 +37,8 @@ const App: React.FC = () => {
           <SellerDetails path={routes.directory_seller} />
           <RoleCreate path={routes.roles_create} />
           <Inventory path={routes.inventory} />
+          <Category path={routes.category} />
+         
         </Router>
       </DashboardLayout>
     </Container>

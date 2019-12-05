@@ -48,16 +48,23 @@ type Categories struct {
 }
 
 type Category struct {
-	ID          string    `json:"id"`
-	Name        *string   `json:"name"`
-	CreateAt    time.Time `json:"createAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
-	Description *string   `json:"description"`
+	ID                 string      `json:"id"`
+	Name               *string     `json:"name"`
+	Parent             *Category   `json:"parent"`
+	BackgroundImage    *string     `json:"backgroundImage"`
+	BackgroundImageAlt *string     `json:"backgroundImageAlt"`
+	CreatedAt          time.Time   `json:"createdAt"`
+	UpdatedAt          time.Time   `json:"updatedAt"`
+	Description        *string     `json:"description"`
+	Sub                []*Category `json:"sub"`
 }
 
 type CategoryInput struct {
-	Name        string  `json:"name"`
-	Description *string `json:"description"`
+	Name               string  `json:"name"`
+	Description        *string `json:"description"`
+	Parent             *string `json:"parent"`
+	BackgroundImage    *string `json:"backgroundImage"`
+	BackgroundImageAlt *string `json:"backgroundImageAlt"`
 }
 
 type CreateProductVariantInput struct {
@@ -65,11 +72,12 @@ type CreateProductVariantInput struct {
 	Variants []*ProductVariantInput `json:"variants"`
 }
 
-// The `File` type, represents the response of uploading a file.
-type File struct {
-	ID      int    `json:"id"`
-	Name    string `json:"name"`
-	Content string `json:"content"`
+// The `Image` type, represents the response of uploading a file.
+type Image struct {
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	Source    string    `json:"source"`
+	CreatedAt time.Time `json:"createdAt"`
 }
 
 type Permission struct {
@@ -136,6 +144,7 @@ type ProductVariant struct {
 	TrackInventory    *bool     `json:"trackInventory"`
 	QuantityAllocated *int      `json:"quantityAllocated"`
 	Product           *Product  `json:"product"`
+	Images            []*Image  `json:"images"`
 }
 
 type ProductVariantInput struct {
