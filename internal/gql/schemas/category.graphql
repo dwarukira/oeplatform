@@ -25,6 +25,7 @@ type Categories {
 
 extend type Query {
   categories(id: ID): Categories 
+  subCategories(categoryID: ID): Categories
 }
 
 # Define mutations here

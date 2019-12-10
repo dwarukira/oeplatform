@@ -6,7 +6,7 @@ import (
 	dbm "oe/internal/models"
 )
 
-func GQLInputProductToDBProduct(i *gql.ProductCreateInput, seller *dbm.Seller, update bool, ids ...string) (o *dbm.Product, err error) {
+func GQLInputProductToDBProduct(i *gql.ProductCreateInput, seller *dbm.Seller, category *dbm.Category, update bool, ids ...string) (o *dbm.Product, err error) {
 	variants := []dbm.ProductVariant{}
 	for _, vrec := range i.Variants {
 		if rec, err := GQLInputProductVariantToDBProductVariant(vrec, false); err != nil {
@@ -19,6 +19,7 @@ func GQLInputProductToDBProduct(i *gql.ProductCreateInput, seller *dbm.Seller, u
 	o = &dbm.Product{
 		Name:        *i.Name,
 		Seller:      *seller,
+		Category:    *category,
 		Description: *i.Description,
 		IsPublished: *i.IsPublished,
 		Variants:    variants,

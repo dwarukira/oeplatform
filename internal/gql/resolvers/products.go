@@ -211,17 +211,22 @@ func productCreateUpdate(r *mutationResolver, input models.ProductCreateInput, u
 		return nil, errors.New("Access denied. Not a seller")
 	}
 
-	dbo, err := tf.GQLInputProductToDBProduct(&input, seller, false)
+	// Load category
+	category, err := r.ORM.FindCategory(input.Category)
+
+	if err != nil {
+		return nil, errors.New("Can't find the category data")
+	}
+
+	dbo, err := tf.GQLInputProductToDBProduct(&input, seller, category, false)
 
 	if err != nil {
 		return nil, err
 	}
 
 	db := r.ORM.DB.New().Begin()
-
 	db = db.Preload("Seller.User")
 	db = db.Preload("Seller.Bank")
-
 	db = db.Create(dbo).First(dbo)
 
 	gql, err := tf.DBProductToGQLProduct(dbo)

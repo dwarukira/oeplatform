@@ -1,9 +1,9 @@
 package tf
 
 import (
+	"fmt"
 	gql "oe/internal/gql/models"
 	"oe/internal/models"
-	"strconv"
 )
 
 func GQLInputCategoryToDBCategory(i *gql.CategoryInput) (o *models.Category, err error) {
@@ -16,9 +16,10 @@ func GQLInputCategoryToDBCategory(i *gql.CategoryInput) (o *models.Category, err
 }
 
 func DBCategoryTOGQLCategory(i *models.Category) (o *gql.Category, err error) {
+	fmt.Println(i.Sub, "----------------------> is this loaded")
 	if i.Parent == nil {
 		o = &gql.Category{
-			ID:          strconv.Itoa(i.ID),
+			ID:          i.ID,
 			Name:        &i.Name,
 			Description: i.Description,
 			CreatedAt:   i.CreatedAt,
@@ -36,7 +37,7 @@ func DBCategoryTOGQLCategory(i *models.Category) (o *gql.Category, err error) {
 	}
 
 	o = &gql.Category{
-		ID:          strconv.Itoa(i.ID),
+		ID:          i.ID,
 		Name:        &i.Name,
 		Description: i.Description,
 		Parent:      category,

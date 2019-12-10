@@ -1,6 +1,6 @@
 export OE_DB_DRIVER=postgres
 export OE_DB_DIALECT=postgres
-export OE_DB_DATABASE_URL="postgres://duncanwarukira:@localhost/oe?sslmode=disable"
+export OE_DB_DATABASE_URL=""
 export OE_DB_NAMESPACE=oe
 export OE_DB_AUTOMIGRATE=true
 export OE_LOG_LEVEL="info"

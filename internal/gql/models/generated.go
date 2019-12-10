@@ -128,6 +128,7 @@ type ProductCreateInput struct {
 	Color           *string                `json:"color"`
 	Brand           *string                `json:"brand"`
 	ColorFamily     *string                `json:"colorFamily"`
+	Category        string                 `json:"category"`
 	Variants        []*ProductVariantInput `json:"variants"`
 }
 

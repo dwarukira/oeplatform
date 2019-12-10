@@ -158,7 +158,7 @@ input ProductCreateInput {
   color: String
   brand: String
   colorFamily: String
-  
+  category: ID!
   variants: [ProductVariantInput]
 }
 
@@ -197,7 +197,8 @@ extend type Mutation {
   addProductPhoto(files: [Upload!], productVariantID: ID!): [Image!] 
   singleUpload(file: Upload!): Image!
   multipleUploadWithPayload(req: [UploadFile!]!): [Image!]!
-
+  updateProduct(id: ID, input: ProductCreateInput): Product
+  deleteProduct(id: ID): Product
 }
 
 

@@ -175,6 +175,7 @@ type ComplexityRoot struct {
 		Roles          func(childComplexity int, id *string) int
 		SellerProducts func(childComplexity int, id *string) int
 		Sellers        func(childComplexity int, id *string) int
+		SubCategories  func(childComplexity int, categoryID *string) int
 		Users          func(childComplexity int, id *string) int
 	}
 
@@ -271,6 +272,7 @@ type QueryResolver interface {
 	Sellers(ctx context.Context, id *string) (*models.Sellers, error)
 	Roles(ctx context.Context, id *string) (*models.Roles, error)
 	Categories(ctx context.Context, id *string) (*models.Categories, error)
+	SubCategories(ctx context.Context, categoryID *string) (*models.Categories, error)
 	Products(ctx context.Context, id *string, filter *models.FilterProduct) (*models.Products, error)
 	SellerProducts(ctx context.Context, id *string) (*models.Products, error)
 }
@@ -1012,6 +1014,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Sellers(childComplexity, args["id"].(*string)), true
 
+	case "Query.subCategories":
+		if e.complexity.Query.SubCategories == nil {
+			break
+		}
+
+		args, err := ec.field_Query_subCategories_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.SubCategories(childComplexity, args["categoryID"].(*string)), true
+
 	case "Query.users":
 		if e.complexity.Query.Users == nil {
 			break
@@ -1477,6 +1491,7 @@ type Categories {
 
 extend type Query {
   categories(id: ID): Categories 
+  subCategories(categoryID: ID): Categories
 }
 
 # Define mutations here
@@ -1644,7 +1659,7 @@ input ProductCreateInput {
   color: String
   brand: String
   colorFamily: String
-  
+  category: ID!
   variants: [ProductVariantInput]
 }
 
@@ -2190,6 +2205,20 @@ func (ec *executionContext) field_Query_sellers_args(ctx context.Context, rawArg
 		}
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_subCategories_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *string
+	if tmp, ok := rawArgs["categoryID"]; ok {
+		arg0, err = ec.unmarshalOID2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["categoryID"] = arg0
 	return args, nil
 }
 
@@ -5323,6 +5352,44 @@ func (ec *executionContext) _Query_categories(ctx context.Context, field graphql
 	return ec.marshalOCategories2ᚖoeᚋinternalᚋgqlᚋmodelsᚐCategories(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_subCategories(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+		ec.Tracer.EndFieldExecution(ctx)
+	}()
+	rctx := &graphql.ResolverContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_subCategories_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx.Args = args
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec._fieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().SubCategories(rctx, args["categoryID"].(*string))
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.Categories)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOCategories2ᚖoeᚋinternalᚋgqlᚋmodelsᚐCategories(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_products(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() {
@@ -8396,6 +8463,12 @@ func (ec *executionContext) unmarshalInputProductCreateInput(ctx context.Context
 			if err != nil {
 				return it, err
 			}
+		case "category":
+			var err error
+			it.Category, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "variants":
 			var err error
 			it.Variants, err = ec.unmarshalOProductVariantInput2ᚕᚖoeᚋinternalᚋgqlᚋmodelsᚐProductVariantInput(ctx, v)
@@ -9329,6 +9402,17 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_categories(ctx, field)
+				return res
+			})
+		case "subCategories":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_subCategories(ctx, field)
 				return res
 			})
 		case "products":
@@ -10941,7 +11025,7 @@ func (ec *executionContext) marshalOImage2ᚕᚖoeᚋinternalᚋgqlᚋmodelsᚐI
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNImage2ᚖoeᚋinternalᚋgqlᚋmodelsᚐImage(ctx, sel, v[i])
+			ret[i] = ec.marshalOImage2ᚖoeᚋinternalᚋgqlᚋmodelsᚐImage(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -11153,7 +11237,7 @@ func (ec *executionContext) unmarshalOProductVariantInput2ᚕᚖoeᚋinternalᚋ
 	var err error
 	res := make([]*models.ProductVariantInput, len(vSlice))
 	for i := range vSlice {
-		res[i], err = ec.unmarshalOProductVariantInput2ᚖoeᚋinternalᚋgqlᚋmodelsᚐProductVariantInput(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNProductVariantInput2ᚖoeᚋinternalᚋgqlᚋmodelsᚐProductVariantInput(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
